@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EWS: Dashboard Monitoring Capaian Kinerja Dinas Kominfo Konawe</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f4ff',
+                            100: '#e0e9ff',
+                            200: '#c2d4ff',
+                            300: '#94b3ff',
+                            400: '#5e85ff',
+                            500: '#3653f5',
+                            600: '#2033db',
+                            700: '#1926af',
+                            800: '#1b228c',
+                            900: '#1a1f70',
+                            950: '#101247',
+                        },
+                        accent: {
+                            red: '#EF4444',
+                            yellow: '#F59E0B',
+                            green: '#10B981',
+                            blue: '#3B82F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dark-mode-bg {
+            background-color: #090d16;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.08), 0 2px 10px -1px rgba(148, 163, 184, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .dark .glass-card {
+            background: rgba(17, 24, 39, 0.6);
+            border-color: rgba(51, 65, 85, 0.5);
+            box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.3), 0 2px 12px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 10px 25px -3px rgba(148, 163, 184, 0.12), 0 4px 12px -2px rgba(148, 163, 184, 0.06);
+        }
+
+        .dark .glass-card:hover {
+            box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.4), 0 4px 15px -2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Gauge Chart Styles */
+        .gauge-container {
+            position: relative;
+            width: 140px;
+            height: 70px;
+            overflow: hidden;
+        }
+
+        .gauge-bg {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 16px solid #e2e8f0;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+            transform: rotate(-135deg);
+        }
+
+        .gauge-needle {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            height: 55px;
+            background: #1e293b;
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(-90deg);
+            transition: transform 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .dark .gauge-needle {
+            background: #f1f5f9;
+        }
+
+        .gauge-center {
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #1e293b;
+            transform: translateX(-50%);
+            border: 2px solid #ffffff;
+        }
+
+        .dark .gauge-center {
+            background: #f1f5f9;
+            border-color: #0f172a;
+        }
+
+        /* Active Tab Indicator */
+        .tab-btn-active {
+            color: #3653f5;
+            border-bottom: 2px solid #3653f5;
+        }
+
+        .dark .tab-btn-active {
+            color: #60a5fa;
+            border-bottom: 2px solid #60a5fa;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-12">
+    <!-- TOP HEADER BAR -->
+    <header class="bg-gradient-to-r from-brand-950 via-brand-900 to-slate-900 text-white shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="p-2.5 bg-brand-500/20 border border-brand-400/30 rounded-xl shadow-inner animate-pulse">
+                        <i data-lucide="activity" class="w-8 h-8 text-brand-400"></i>
+                    </div>
+                    <div>
+                        <h1
+                            class="text-xl md:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-brand-100 to-brand-300 bg-clip-text text-transparent">
+                            EWS: DASHBOARD MONITORING
+                        </h1>
+                        <p class="text-xs md:text-sm font-medium text-brand-300/90 tracking-wide mt-0.5">
+                            CAPAIAN KINERJA DINAS KOMINFO KONAWE
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3.5">
+                    <!-- Live Badge -->
+                    <span
+                        class="flex items-center px-3 py-1 bg-red-500/15 border border-red-500/30 rounded-full text-[10px] sm:text-xs font-semibold text-red-400 uppercase tracking-widest gap-1.5 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                        LIVE DATA
+                    </span>
+
+                    <!-- Last Updated Info -->
+                    <div class="text-right text-[10px] sm:text-xs font-medium text-slate-400">
+                        <span class="block text-slate-300">Live Sync Google Sheet</span>
+                        <span id="live-time" class="font-mono text-[11px]">Loading...</span>
+                    </div>
+
+                    <!-- Dark Mode Toggle Button -->
+                    <button onclick="toggleDarkMode()"
+                        class="p-2.5 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl transition duration-150 focus:outline-none"
+                        title="Ubah Tema">
+                        <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+                    </button>
+
+                    <!-- PDF Export Button -->
+                    <button onclick="window.print()"
+                        class="flex items-center px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs sm:text-sm font-semibold transition shadow-md shadow-brand-950/20 gap-2">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        Cetak Laporan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CORE WRAPPER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+
+        <!-- TABS AND SHEETS EXCEL DIRECT LINK -->
+        <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-4">
+            <div class="flex space-x-6 overflow-x-auto scrollbar-hide py-1">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard"
+                    class="tab-btn px-1 pb-3 text-sm font-semibold transition whitespace-nowrap tab-btn-active">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="layout-dashboard" class="w-4.5 h-4.5"></i>
+                        Dashboard Capaian Kinerja
+                    </span>
+                </button>
+                <button onclick="switchTab('iku')" id="tab-iku"
+                    class="tab-btn px-1 pb-3 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition whitespace-nowrap">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="target" class="w-4.5 h-4.5"></i>
+                        Tabel IKU (Indikator Kinerja Utama)
+                    </span>
+                </button>
+                <button onclick="switchTab('realisasi')" id="tab-realisasi"
+                    class="tab-btn px-1 pb-3 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition whitespace-nowrap">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="history" class="w-4.5 h-4.5"></i>
+                        Form Log Realisasi
+                    </span>
+                </button>
+            </div>
+
+            <a href="https://docs.google.com/spreadsheets/d/1KTG8WCkU_pEWPvfv9gMyAIVMuTEdW_fX2EOsoA3C79g/edit?gid=0#gid=0"
+                target="_blank"
+                class="flex items-center px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-semibold rounded-lg text-xs gap-1.5 transition">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                Buka Google Sheets Asli
+            </a>
+        </div>
+
+        <!-- FILTERS PANEL -->
+        <section class="glass-card rounded-2xl p-5 mt-6">
+            <div class="flex items-center mb-4 text-brand-600 dark:text-brand-400 gap-2">
+                <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                <h2 class="text-sm font-bold uppercase tracking-wider">Filter Data</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Filter Sub Kegiatan -->
+                <div>
+                    <label
+                        class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Sub
+                        Kegiatan</label>
+                    <div class="relative">
+                        <select id="filter-sub-kegiatan" onchange="applyFilters()"
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none cursor-pointer">
+                            <option value="ALL">-- Tampilkan Semua Sub Kegiatan --</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-3 top-3.5 w-4.5 h-4.5 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Filter Keterangan -->
+                <div>
+                    <label
+                        class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Keterangan
+                        Status</label>
+                    <div class="relative">
+                        <select id="filter-keterangan" onchange="applyFilters()"
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none cursor-pointer">
+                            <option value="ALL">-- Tampilkan Semua Status --</option>
+                            <option value="BELUM">🔴 BELUM MULAI (Not Started)</option>
+                            <option value="PROSES">🟡 DALAM PROSES (In Progress)</option>
+                            <option value="SELESAI">🟢 SELESAI (Completed)</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-3 top-3.5 w-4.5 h-4.5 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Filter Rencana Eksekusi -->
+                <div>
+                    <label
+                        class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Rencana
+                        Eksekusi</label>
+                    <div class="relative">
+                        <select id="filter-eksekusi" onchange="applyFilters()"
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none cursor-pointer">
+                            <option value="ALL">-- Tampilkan Semua Bulan --</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-3 top-3.5 w-4.5 h-4.5 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="filter-status-msg" class="text-[11px] font-medium text-slate-400 mt-3 flex items-center gap-1">
+                <i data-lucide="info" class="w-4 h-4"></i>
+                Menampilkan <span id="filtered-count-text"
+                    class="text-brand-600 dark:text-brand-400 font-bold">15</span> dari <span
+                    class="font-bold">15</span> kegiatan aktif (tidak termasuk header program).
+            </div>
+        </section>
+
+        <!-- ==================== TAB 1: DASHBOARD MONITORING ==================== -->
+        <div id="pane-dashboard" class="tab-pane space-y-6 mt-6">
+
+            <!-- TOP CARD GRID -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- Card 1: Total Activities -->
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span
+                            class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total
+                            Kegiatan</span>
+                        <div class="p-2 bg-brand-50 dark:bg-brand-950 rounded-xl text-brand-600 dark:text-brand-400">
+                            <i data-lucide="folder-kanban" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div class="my-4">
+                        <div id="stat-total-activities" class="text-4xl font-extrabold tracking-tight">15</div>
+                        <span class="text-xs font-medium text-slate-400 mt-1 block">(Sub Kegiatan Terdaftar)</span>
+                    </div>
+                    <div
+                        class="border-t border-slate-100 dark:border-slate-800 pt-3 flex justify-between text-[11px] font-medium text-slate-400">
+                        <span>Aktif Memiliki Target</span>
+                        <span class="text-emerald-500 font-bold">100%</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Average Realization with Gauge -->
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <span
+                            class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Rata-rata
+                            Realisasi</span>
+                        <span
+                            class="text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950 px-2 py-0.5 rounded-full">%
+                            Realisasi</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 my-1">
+                        <div>
+                            <div id="stat-avg-realization" class="text-3xl font-extrabold tracking-tight">17.18%</div>
+                            <span class="text-[10px] font-medium text-slate-400 mt-1 block">Dari Target Triwulan</span>
+                        </div>
+                        <!-- Custom SVG/Canvas Gauge Chart -->
+                        <div class="gauge-container scale-90 origin-right">
+                            <div class="gauge-bg"></div>
+                            <!-- Rainbow overlay zone indicators -->
+                            <div class="absolute inset-0 flex items-end justify-center">
+                                <svg class="w-full h-full absolute inset-0" viewBox="0 0 100 50">
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#EF4444" stroke-width="12"
+                                        stroke-dasharray="125" stroke-dashoffset="0" opacity="0.15" />
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#F59E0B" stroke-width="12"
+                                        stroke-dasharray="125" stroke-dashoffset="62.5" opacity="0.15" />
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#10B981" stroke-width="12"
+                                        stroke-dasharray="125" stroke-dashoffset="100" opacity="0.15" />
+                                </svg>
+                            </div>
+                            <div id="gauge-needle" class="gauge-needle"></div>
+                            <div class="gauge-center"></div>
+                        </div>
+                    </div>
+                    <div
+                        class="border-t border-slate-100 dark:border-slate-800 pt-3 flex justify-between text-[11px] font-medium text-slate-400">
+                        <span>Skala Target Triwulan II</span>
+                        <span id="stat-gauge-range" class="text-red-500 font-bold">Kritis (0-50%)</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Activities by Status -->
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-3">
+                        <span
+                            class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status
+                            Kegiatan</span>
+                        <div class="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center my-2">
+                        <div class="p-2 bg-red-500/5 border border-red-500/10 rounded-xl">
+                            <span
+                                class="text-[10px] font-bold text-red-500 dark:text-red-400 uppercase tracking-wider">Belum</span>
+                            <div id="stat-status-belum" class="text-2xl font-black text-red-500 mt-1">10</div>
+                        </div>
+                        <div class="p-2 bg-amber-500/5 border border-amber-500/10 rounded-xl">
+                            <span
+                                class="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider">Proses</span>
+                            <div id="stat-status-proses" class="text-2xl font-black text-amber-500 mt-1">4</div>
+                        </div>
+                        <div class="p-2 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
+                            <span
+                                class="text-[10px] font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-wider">Selesai</span>
+                            <div id="stat-status-selesai" class="text-2xl font-black text-emerald-500 mt-1">1</div>
+                        </div>
+                    </div>
+                    <div
+                        class="border-t border-slate-100 dark:border-slate-800 pt-2.5 flex justify-between text-[11px] font-medium text-slate-400">
+                        <span>Penyelesaian</span>
+                        <span id="stat-pct-selesai" class="text-slate-600 dark:text-slate-200 font-bold">6.67%</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Urgent Attention List -->
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-red-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="alert-triangle" class="w-4.5 h-4.5 animate-bounce"></i>
+                            Daftar Kritis (0%)
+                        </span>
+                        <span id="stat-urgent-count"
+                            class="text-[10px] font-bold text-red-500 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-900/50">12
+                            Kegiatan</span>
+                    </div>
+                    <div class="max-h-[105px] overflow-y-auto pr-1 space-y-1.5 text-xs font-medium" id="urgent-list">
+                        <!-- Will be dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIDDLE ROW CHARTS -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Chart: Bullet progress visualization (8 cols) -->
+                <div class="glass-card rounded-2xl p-5 lg:col-span-7 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="bar-chart-3" class="w-5 h-5 text-brand-500"></i>
+                                <h3 class="text-sm font-bold uppercase tracking-wider">Grouped Bullet Chart (Progres
+                                    Realisasi)</h3>
+                            </div>
+                            <div class="flex items-center text-[10px] font-bold tracking-wide gap-3">
+                                <span class="flex items-center gap-1 text-brand-600"><span
+                                        class="w-2.5 h-2.5 rounded bg-brand-500"></span> Realisasi</span>
+                                <span class="flex items-center gap-1 text-slate-400"><span
+                                        class="w-2.5 h-0.5 bg-red-500"></span> Target T2</span>
+                            </div>
+                        </div>
+
+                        <!-- Bullet Track Legend indicators -->
+                        <div
+                            class="flex text-[9px] font-bold text-slate-400 mb-3 uppercase tracking-widest gap-2 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200/50 dark:border-slate-800/50">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-red-500/20"></span>
+                                Kritis (0-50%)</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-amber-500/20"></span>
+                                Sedang (51-80%)</span>
+                            <span class="flex items-center gap-1"><span
+                                    class="w-2 h-2 rounded bg-emerald-500/20"></span> Bagus (81-100%)</span>
+                        </div>
+
+                        <!-- Bullet Charts Container -->
+                        <div class="space-y-4 max-h-[350px] overflow-y-auto pr-2" id="bullet-charts-container">
+                            <!-- Bullet items injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Donut Chart & Monthly Execution (5 cols) -->
+                <div class="lg:col-span-5 grid grid-cols-1 gap-6">
+                    <!-- Donut Status Chart -->
+                    <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="donut-chart" class="w-5 h-5 text-brand-500"></i>
+                                Kegiatan Berdasarkan Status
+                            </h3>
+                        </div>
+                        <div class="h-[180px] flex items-center justify-center relative">
+                            <canvas id="status-donut-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Execution Distribution -->
+                    <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="calendar" class="w-5 h-5 text-brand-500"></i>
+                                Rencana Eksekusi Bulanan
+                            </h3>
+                        </div>
+                        <div class="h-[140px] flex items-center justify-center">
+                            <canvas id="monthly-bar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE VIEW FOR CAPAIAN KINERJA -->
+            <div class="glass-card rounded-2xl overflow-hidden">
+                <div
+                    class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="table" class="w-5 h-5 text-brand-500"></i>
+                        <h3 class="text-sm font-bold uppercase tracking-wider">Detail Data Capaian Kinerja</h3>
+                    </div>
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="search-input" onkeyup="searchTable()"
+                            placeholder="Cari Kegiatan / Indikator..."
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <!-- Table Responsive Container -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="capaian-table">
+                        <thead>
+                            <tr
+                                class="bg-slate-50/75 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                <th class="py-4 px-4 font-extrabold w-12 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(0)">No</th>
+                                <th class="py-4 px-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(1)">Sub Kegiatan</th>
+                                <th class="py-4 px-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(2)">Indikator Kinerja</th>
+                                <th class="py-4 px-4 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(3)">Target T1</th>
+                                <th class="py-4 px-4 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(4)">Realisasi T1</th>
+                                <th class="py-4 px-4 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(5)">Target T2</th>
+                                <th class="py-4 px-4 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(6)">Realisasi T2</th>
+                                <th class="py-4 px-4 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(7)">Total Real (%)</th>
+                                <th class="py-4 px-4 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(8)">Bulan Eksekusi</th>
+                                <th class="py-4 px-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(9)">Fisik Kegiatan</th>
+                                <th class="py-4 px-4 text-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    onclick="sortTable(10)">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-xs" id="table-body">
+                            <!-- Table rows injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table pagination / bottom bar -->
+                <div
+                    class="px-5 py-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-[11px] font-semibold text-slate-400">
+                    <span id="table-info">Menampilkan 15 kegiatan</span>
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
+                        Semua data tervalidasi
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 2: TABEL IKU ==================== -->
+        <div id="pane-iku" class="tab-pane space-y-6 mt-6 hidden">
+            <div class="glass-card rounded-2xl overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="target" class="w-5 h-5 text-brand-500"></i>
+                        <div>
+                            <h3 class="text-sm font-bold uppercase tracking-wider">Tabel Indikator Kinerja Utama (IKU)
+                            </h3>
+                            <p class="text-[11px] font-medium text-slate-400 mt-1">Dinas Komunikasi, Informatika,
+                                Statistik, dan Persandian Kabupaten Konawe</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-slate-50/75 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                <th class="py-4 px-5">Tujuan Strategis</th>
+                                <th class="py-4 px-5">Sasaran Strategis</th>
+                                <th class="py-4 px-5">Indikator Kinerja Utama</th>
+                                <th class="py-4 px-5 text-center">Satuan</th>
+                                <th class="py-4 px-5 text-center">Target</th>
+                                <th class="py-4 px-5 text-center">Realisasi</th>
+                                <th class="py-4 px-5 text-center">Capaian %</th>
+                                <th class="py-4 px-5 text-center">Bukti Dukung</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-xs" id="iku-table-body">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 3: FORM LOG REALISASI ==================== -->
+        <div id="pane-realisasi" class="tab-pane space-y-6 mt-6 hidden">
+            <div class="glass-card rounded-2xl overflow-hidden">
+                <div
+                    class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5 text-brand-500"></i>
+                        <div>
+                            <h3 class="text-sm font-bold uppercase tracking-wider">Form Realisasi Submisi</h3>
+                            <p class="text-[11px] font-medium text-slate-400 mt-1">Riwayat pelaporan capaian dari staf
+                                melalui formulir digital</p>
+                        </div>
+                    </div>
+                    <span
+                        class="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        Terhubung ke Database Form
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-slate-50/75 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                <th class="py-4 px-5">Waktu Lapor</th>
+                                <th class="py-4 px-5">Sub Kegiatan</th>
+                                <th class="py-4 px-5">Periode Lapor</th>
+                                <th class="py-4 px-5 text-right">Nilai Progress</th>
+                                <th class="py-4 px-5">Dilaporkan Oleh</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-xs" id="form-table-body">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- DATASET DEFINITIONS AND BUSINESS LOGIC JS -->
+    <script>
+        // 1. DATASET FROM EXCEL
+        const capayanData = [
+            {
+                "no": "1",
+                "sub_kegiatan": "Relasi Media",
+                "sasaran": "Terlaksananya Relasi Media",
+                "indikator": "Jumlah aktivitas relasi media kepada media yang memenuhi kriteria terverifikasi dewan pers, terdaftar di Dinas Kominfo, dan aktif",
+                "pagu": "52025700.0",
+                "satuan": "Laporan",
+                "kinerja_2026": "1.0",
+                "target_t1": "50.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "JANUARI-JUNI",
+                "fisik_kegiatan": "(VERFAK)",
+                "keterangan": "PROSES"
+            },
+            {
+                "no": "2",
+                "sub_kegiatan": "Kemitraan Komunikasi dengan Komunitas Informasi Masyarakat",
+                "sasaran": "Terlaksananya Kemitraan dengan Pemangku Kepentingan",
+                "indikator": "Jumlah Komunitas Informasi yang aktif mendiseminasikan informasi dan terdaftar di Dinas Kominfo",
+                "pagu": "52025700.0",
+                "satuan": "Komunitas",
+                "kinerja_2026": "1.0",
+                "target_t1": "0.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "71.09",
+                "total_realisasi_pct": 71.09,
+                "rencana_eksekusi": "APRIL",
+                "fisik_kegiatan": "BIMTEK KIM",
+                "keterangan": "PROSES"
+            },
+            {
+                "no": "3",
+                "sub_kegiatan": "Pelayanan Informasi Publik",
+                "sasaran": "Tersedianya Pelayanan Informasi Publik",
+                "indikator": "Jumlah permohonan Informasi Publik yang diselesaikan sesuai peraturan perundangan",
+                "pagu": "",
+                "satuan": "Permohonan",
+                "kinerja_2026": "1.0",
+                "target_t1": "100.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "FEBRUARI",
+                "fisik_kegiatan": "MONITORING PPID",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "4",
+                "sub_kegiatan": "Monitoring Informasi Kebijakan, Opini, dan Aspirasi Publik",
+                "sasaran": "Terlaksananya Monitoring Informasi Kebijakan, Opini, dan Aspirasi Publik",
+                "indikator": "Jumlah rekomendasi komunikasi terhadap isu publik yang berkembang dan usulan agenda prioritas Pemda",
+                "pagu": "",
+                "satuan": "Rekomendasi",
+                "kinerja_2026": "1.0",
+                "target_t1": "0.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "0.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "JULI",
+                "fisik_kegiatan": "BIMTEK SP4N LAPOR",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "5",
+                "sub_kegiatan": "Pengelolaan Media Komunikasi Publik",
+                "sasaran": "Terlaksananya Pengelolaan Media Komunikasi Publik",
+                "indikator": "Jumlah media komunikasi publik milik Pemda yang dikelola maupun pemanfaatan media berbayar",
+                "pagu": "",
+                "satuan": "Media",
+                "kinerja_2026": "5.0",
+                "target_t1": "25.0",
+                "realisasi_t1": "54.63",
+                "target_t2": "25.0",
+                "realisasi_t2": "7.72",
+                "total_realisasi_pct": 62.35,
+                "rencana_eksekusi": "JANUARI-DESEMBER",
+                "fisik_kegiatan": "PODCAST, UKW",
+                "keterangan": "PROSES"
+            },
+            {
+                "no": "6",
+                "sub_kegiatan": "Penyusunan Konten",
+                "sasaran": "Terlaksananya Penyusunan Konten",
+                "indikator": "Jumlah Konten Informasi Publik",
+                "pagu": "",
+                "satuan": "Konten",
+                "kinerja_2026": "5.0",
+                "target_t1": "25.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "25.0",
+                "realisasi_t2": "15.15",
+                "total_realisasi_pct": 15.15,
+                "rencana_eksekusi": "JANUARI-NOVEMBER",
+                "fisik_kegiatan": "Konten publikasi dan dokumentasi program",
+                "keterangan": "PROSES"
+            },
+            {
+                "no": "9",
+                "sub_kegiatan": "Koordinasi Pemanfaatan Pusat Data Nasional",
+                "sasaran": "Terlaksananya koordinasi dalam rangka pemanfaatan Pusat Data Nasional",
+                "indikator": "Jumlah Aplikasi SPBE Pemda yang sudah ditempatkan di PDN",
+                "pagu": "",
+                "satuan": "Aplikasi",
+                "kinerja_2026": "1.0",
+                "target_t1": "100.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "1.0",
+                "realisasi_t2": "1.0",
+                "total_realisasi_pct": 100.0,
+                "rencana_eksekusi": "FEBRUARI",
+                "fisik_kegiatan": "Lisensi aplikasi dedicated server",
+                "keterangan": "SELESAI"
+            },
+            {
+                "no": "10",
+                "sub_kegiatan": "Koordinasi pelaksanaan Manajemen SPBE",
+                "sasaran": "Terlaksananya Koordinasi pelaksanaan Manajemen SPBE",
+                "indikator": "Jumlah Dokumen Koordinasi pelaksanaan Manajemen SPBE",
+                "pagu": "",
+                "satuan": "Dokumen",
+                "kinerja_2026": "1.0",
+                "target_t1": "0.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "APRIL",
+                "fisik_kegiatan": "Perjalanan Dinas Wawancara Indeks SPBE",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "11",
+                "sub_kegiatan": "Penyelenggaraan Jaringan Intra Pemerintah Daerah Kab/Kota",
+                "sasaran": "Terlaksananya Penyelenggaraan Jaringan Intra Pemerintah Daerah Kab/Kota",
+                "indikator": "Jumlah perangkat daerah di Pemkab yang terhubung dengan Jaringan Intra",
+                "pagu": "",
+                "satuan": "Perangkat Daerah",
+                "kinerja_2026": "34.0",
+                "target_t1": "100.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "MARET",
+                "fisik_kegiatan": "Peralatan Jaringan (Starlink DPRD)",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "12",
+                "sub_kegiatan": "Fasilitasi penyelenggaraan Audit TIK sesuai kewenangan Dinas Kominfo",
+                "sasaran": "Terlaksananya Fasilitasi penyelenggaraan Audit TIK sesuai kewenangan Dinas Kominfo",
+                "indikator": "Jumlah Dokumen Fasilitasi dalam rangka audit internal TIK",
+                "pagu": "",
+                "satuan": "Dokumen",
+                "kinerja_2026": "1.0",
+                "target_t1": "100.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "MARET",
+                "fisik_kegiatan": "Kegiatan Audit Internal Aplikasi SPBE",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "13",
+                "sub_kegiatan": "Koordinasi pembangunan dan/atau pengembangan Aplikasi Khusus",
+                "sasaran": "Terlaksananya pembangunan/pengembangan aplikasi khusus sesuai arsitektur SPBE",
+                "indikator": "Jumlah aplikasi khusus yang dibangun/dikembangkan sesuai juknis standar teknis",
+                "pagu": "",
+                "satuan": "Aplikasi",
+                "kinerja_2026": "1.0",
+                "target_t1": "100.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "MARET",
+                "fisik_kegiatan": "Pengembangan Awal Aplikasi PINDARA Konawe",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "14",
+                "sub_kegiatan": "Koordinasi Pengelolaan Data dan Informasi",
+                "sasaran": "Terlaksananya koordinasi Pengelolaan Data dan Informasi",
+                "indikator": "Jumlah data dan informasi yang dipetakan berdasarkan Arsitektur SPBE",
+                "pagu": "",
+                "satuan": "Dokumen",
+                "kinerja_2026": "1.0",
+                "target_t1": "0.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "9.05",
+                "total_realisasi_pct": 9.05,
+                "rencana_eksekusi": "MEI",
+                "fisik_kegiatan": "Perjadin Kecamatan",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "17",
+                "sub_kegiatan": "Pelaksanaan Proses Bisnis Statistik Sektoral Sesuai Standar",
+                "sasaran": "Terlaksananya Proses Bisnis Statistik Sektoral Sesuai Standar",
+                "indikator": "Persentase kegiatan statistik yang dilengkapi dokumen perencanaan",
+                "pagu": "",
+                "satuan": "%",
+                "kinerja_2026": "100.0",
+                "target_t1": "0.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "MEI",
+                "fisik_kegiatan": "DESK META DATA STATISTIK",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "18",
+                "sub_kegiatan": "Koordinasi dan Kolaborasi Dalam Penyelenggaraan Statistik Sektoral",
+                "sasaran": "Terlaksananya Koordinasi dan Kolaborasi Dalam Forum Satu Data Daerah",
+                "indikator": "Jumlah laporan penyelenggaraan forum satu data daerah",
+                "pagu": "",
+                "satuan": "Laporan",
+                "kinerja_2026": "1.0",
+                "target_t1": "0.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "0.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "AGUSTUS",
+                "fisik_kegiatan": "FORUM SDI",
+                "keterangan": "BELUM"
+            },
+            {
+                "no": "21",
+                "sub_kegiatan": "Pelaksanaan Keamanan Informasi Pemerintahan Daerah Berbasis Elektronik",
+                "sasaran": "Terlaksananya Keamanan Informasi Pemerintahan Daerah Berbasis Elektronik",
+                "indikator": "Jumlah Laporan Pelaksanaan Keamanan Informasi Berbasis Elektronik",
+                "pagu": "",
+                "satuan": "Laporan",
+                "kinerja_2026": "1.0",
+                "target_t1": "0.0",
+                "realisasi_t1": "0.0",
+                "target_t2": "100.0",
+                "realisasi_t2": "0.0",
+                "total_realisasi_pct": 0.0,
+                "rencana_eksekusi": "APRIL",
+                "fisik_kegiatan": "Koordinasi Pembentukan Konawekab CSIRT",
+                "keterangan": "BELUM"
+            }
+        ];
+
+        const ikuData = [
+            {
+                "tujuan_strategis": "Mewujudkan tata kelola pemerintahan yang akuntabel serta peningkatan kualitas layanan komunikasi, informatika, statistik, dan persandian",
+                "sasaran_strategis": "Meningkatnya respon dan efektivitas tindak lanjut pengaduan masyarakat melalui aplikasi digital",
+                "indikator_utama": "Persentase Pengaduan Masyarakat Yang Ditindaklanjuti Melalui Aplikasi Layanan Publik Digital",
+                "satuan": "Persen",
+                "target": "60",
+                "realisasi": "1.0",
+                "capaian_pct": "91.0",
+                "link_bukti": ""
+            },
+            {
+                "tujuan_strategis": "Mewujudkan tata kelola pemerintahan yang akuntabel serta peningkatan kualitas layanan komunikasi, informatika, statistik, dan persandian",
+                "sasaran_strategis": "Meningkatnya Kualitas dan Integrasi Aplikasi Informatika",
+                "indikator_utama": "Persentase Aplikasi Layanan Publik yang Terintegrasi dalam Sistem Pemerintahan",
+                "satuan": "Persen",
+                "target": "37.5",
+                "realisasi": "0.0",
+                "capaian_pct": "51.0",
+                "link_bukti": ""
+            },
+            {
+                "tujuan_strategis": "Mewujudkan tata kelola pemerintahan yang akuntabel serta peningkatan kualitas layanan komunikasi, informatika, statistik, dan persandian",
+                "sasaran_strategis": "Meningkatnya Kapasitas dan Koordinasi Antar-OPD",
+                "indikator_utama": "Persentase Organisasi Perangkat Daerah (OPD) yang menggunakan data statistik dalam menyusun perencanaan",
+                "satuan": "Persen",
+                "target": "100",
+                "realisasi": "0.0",
+                "capaian_pct": "0.0",
+                "link_bukti": ""
+            },
+            {
+                "tujuan_strategis": "Mewujudkan tata kelola pemerintahan yang akuntabel serta peningkatan kualitas layanan komunikasi, informatika, statistik, dan persandian",
+                "sasaran_strategis": "Meningkatknya Keamanan Informasi di Lingkungan Pemerintah Daerah",
+                "indikator_utama": "Tingkat keamanan informasi pemerintah",
+                "satuan": "Level",
+                "target": "Level 3",
+                "realisasi": "0.0",
+                "capaian_pct": "0.0",
+                "link_bukti": ""
+            }
+        ];
+
+        const formLogData = [
+            {
+                "timestamp": "2026-05-07 14:52:41",
+                "sub_kegiatan": "Kemitraan Komunikasi dengan Komunitas Informasi Masyarakat",
+                "progress_realisasi": "Rp24.984.400",
+                "periode": "Triwulan II",
+                "email_address": "dinamunawati0212@gmail.com"
+            },
+            {
+                "timestamp": "2026-05-07 15:13:52",
+                "sub_kegiatan": "Kemitraan Komunikasi dengan Komunitas Informasi Masyarakat",
+                "progress_realisasi": "Rp12.000.000",
+                "periode": "Triwulan II",
+                "email_address": "dinamunawati0212@gmail.com"
+            }
+        ];
+
+        // 2. STATE VARIABLES
+        let filteredData = [...capayanData];
+        let statusChart = null;
+        let monthlyChart = null;
+        let currentSortCol = -1;
+        let currentSortAsc = true;
+
+        // 3. ON INIT
+        window.onload = function () {
+            lucide.createIcons();
+
+            // Set live sync time
+            const now = new Date();
+            document.getElementById('live-time').innerText = now.toLocaleString('id-ID') + " WIB";
+
+            // Populate Dropdowns
+            populateFilters();
+
+            // Render Everything
+            renderDashboard();
+            renderIkuTable();
+            renderFormTable();
+
+            // Setup Chart.js Defaults for Dark Mode if needed
+            if (document.documentElement.classList.contains('dark')) {
+                Chart.defaults.color = '#94a3b8';
+            }
+        };
+
+        // 4. POPULATE DROPDOWNS
+        function populateFilters() {
+            const selectSub = document.getElementById('filter-sub-kegiatan');
+            const selectEksekusi = document.getElementById('filter-eksekusi');
+
+            // Unique Sub Kegiatan (only active ones)
+            const uniqueSubs = [...new Set(capayanData.map(item => item.sub_kegiatan))].sort();
+            uniqueSubs.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.innerText = sub;
+                selectSub.appendChild(opt);
+            });
+
+            // Unique Rencana Eksekusi
+            const uniqueMonths = [...new Set(capayanData.map(item => item.rencana_eksekusi).filter(m => m))].sort();
+            uniqueMonths.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.innerText = m;
+                selectEksekusi.appendChild(opt);
+            });
+        }
+
+        // 5. SWITCH TABS
+        function switchTab(tabId) {
+            // Update Tab Headers
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-btn-active', 'text-slate-800', 'dark:text-slate-100', 'font-semibold');
+                btn.classList.add('text-slate-500', 'dark:text-slate-400', 'font-medium');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.add('tab-btn-active', 'text-slate-800', 'dark:text-slate-100', 'font-semibold');
+            activeBtn.classList.remove('text-slate-500', 'dark:text-slate-400', 'font-medium');
+
+            // Update Tab Panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.add('hidden');
+            });
+            document.getElementById(`pane-${tabId}`).classList.remove('hidden');
+        }
+
+        // 6. TOGGLE DARK MODE
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.setAttribute('data-lucide', 'moon');
+                document.body.style.backgroundColor = '#f8fafc';
+                Chart.defaults.color = '#64748b';
+            } else {
+                html.classList.add('dark');
+                icon.setAttribute('data-lucide', 'sun');
+                document.body.style.backgroundColor = '#090d16';
+                Chart.defaults.color = '#94a3b8';
+            }
+            lucide.createIcons();
+
+            // Re-render charts with updated theme colors
+            renderCharts();
+        }
+
+        // 7. FILTERING LOGIC
+        function applyFilters() {
+            const valSub = document.getElementById('filter-sub-kegiatan').value;
+            const valKet = document.getElementById('filter-keterangan').value;
+            const valEks = document.getElementById('filter-eksekusi').value;
+
+            filteredData = capayanData.filter(item => {
+                const matchesSub = (valSub === 'ALL' || item.sub_kegiatan === valSub);
+                const matchesKet = (valKet === 'ALL' || item.keterangan === valKet);
+                const matchesEks = (valEks === 'ALL' || item.rencana_eksekusi === valEks);
+                return matchesSub && matchesKet && matchesEks;
+            });
+
+            // Update count text
+            document.getElementById('filtered-count-text').innerText = filteredData.length;
+
+            // Render view elements
+            renderDashboardStats();
+            renderBulletCharts();
+            renderTable();
+            renderCharts();
+        }
+
+        // 8. RENDER CORE DASHBOARD VISUALS
+        function renderDashboard() {
+            renderDashboardStats();
+            renderBulletCharts();
+            renderCharts();
+            renderTable();
+        }
+
+        // 9. STATS CARDS RENDERING
+        function renderDashboardStats() {
+            // Totals
+            const total = filteredData.length;
+            document.getElementById('stat-total-activities').innerText = total;
+
+            // Average realization
+            let sumReal = 0;
+            let valCount = 0;
+
+            filteredData.forEach(item => {
+                sumReal += parseFloat(item.total_realisasi_pct || 0);
+                valCount++;
+            });
+
+            const avgReal = valCount > 0 ? (sumReal / valCount) : 0;
+            document.getElementById('stat-avg-realization').innerText = `${avgReal.toFixed(2)}%`;
+
+            // Needle position on Gauge
+            // Gauge is rotated from -90deg (0%) to +90deg (100%).
+            // Needle scale: range 180 degrees
+            const needleAngle = -90 + (avgReal * 1.8);
+            document.getElementById('gauge-needle').style.transform = `translateX(-50%) rotate(${needleAngle}deg)`;
+
+            // Gauge state text and indicator color
+            const gaugeText = document.getElementById('stat-gauge-range');
+            if (avgReal < 50) {
+                gaugeText.innerText = "Kritis (0-50%)";
+                gaugeText.className = "text-red-500 font-extrabold";
+            } else if (avgReal < 80) {
+                gaugeText.innerText = "Sedang (51-80%)";
+                gaugeText.className = "text-amber-500 font-extrabold";
+            } else {
+                gaugeText.innerText = "Bagus (81-100%)";
+                gaugeText.className = "text-emerald-500 font-extrabold";
+            }
+
+            // Counts by status
+            const countBelum = filteredData.filter(item => item.keterangan === 'BELUM').length;
+            const countProses = filteredData.filter(item => item.keterangan === 'PROSES').length;
+            const countSelesai = filteredData.filter(item => item.keterangan === 'SELESAI').length;
+
+            document.getElementById('stat-status-belum').innerText = countBelum;
+            document.getElementById('stat-status-proses').innerText = countProses;
+            document.getElementById('stat-status-selesai').innerText = countSelesai;
+
+            const finishedPct = total > 0 ? ((countSelesai / total) * 100) : 0;
+            document.getElementById('stat-pct-selesai').innerText = `${finishedPct.toFixed(1)}%`;
+
+            // Urgent attention list (< 50% realization)
+            const urgentList = document.getElementById('urgent-list');
+            urgentList.innerHTML = '';
+
+            const criticalItems = filteredData.filter(item => parseFloat(item.total_realisasi_pct || 0) < 50);
+            document.getElementById('stat-urgent-count').innerText = `${criticalItems.length} Kegiatan`;
+
+            if (criticalItems.length === 0) {
+                urgentList.innerHTML = `<div class="text-slate-400 text-center py-4 italic">Semua di atas 50%! 🎉</div>`;
+            } else {
+                criticalItems.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = "flex justify-between items-center bg-red-500/5 dark:bg-red-500/10 border border-red-500/10 dark:border-red-500/20 px-2.5 py-1.5 rounded-lg";
+                    row.innerHTML = `
+                        <span class="truncate pr-2 font-semibold text-slate-700 dark:text-slate-300" title="${item.sub_kegiatan}">${item.sub_kegiatan}</span>
+                        <span class="text-red-500 dark:text-red-400 font-bold font-mono">${parseFloat(item.total_realisasi_pct || 0).toFixed(1)}%</span>
+                    `;
+                    urgentList.appendChild(row);
+                });
+            }
+        }
+
+        // 10. BULLET PROGRESS CHARTS
+        function renderBulletCharts() {
+            const container = document.getElementById('bullet-charts-container');
+            container.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `<div class="text-slate-400 text-center py-10 italic">Tidak ada kegiatan yang sesuai filter.</div>`;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const targetVal = parseFloat(item.target_t2 || 100);
+                const realisasiVal = parseFloat(item.total_realisasi_pct || 0);
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "space-y-1 bg-slate-50/50 dark:bg-slate-900/20 border border-slate-100 dark:border-slate-800 p-3 rounded-xl hover:border-slate-300 dark:hover:border-slate-700 transition duration-150";
+
+                // Bullet layout
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-700 dark:text-slate-200 truncate pr-4" title="${item.sub_kegiatan}">${item.sub_kegiatan}</span>
+                        <div class="flex items-center gap-2 text-[10px] font-bold">
+                            <span class="text-slate-400 font-medium">Target T2: ${targetVal}%</span>
+                            <span class="text-brand-500 font-extrabold font-mono">Realisasi: ${realisasiVal.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="relative w-full h-7 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 flex shadow-inner">
+                        <!-- Red range (0-50) -->
+                        <div class="w-1/2 bg-red-500/10 h-full border-r border-red-500/5"></div>
+                        <!-- Yellow range (51-80) -->
+                        <div class="w-[30%] bg-amber-500/10 h-full border-r border-amber-500/5"></div>
+                        <!-- Green range (81-100) -->
+                        <div class="w-[20%] bg-emerald-500/10 h-full"></div>
+                        
+                        <!-- Realisasi Progress Bar -->
+                        <div class="absolute left-0 top-1.5 bottom-1.5 bg-gradient-to-r from-brand-500 to-brand-600 rounded-r shadow-md shadow-brand-500/20 transition-all duration-1000 flex items-center justify-end px-1.5"
+                             style="width: ${Math.min(realisasiVal, 100)}%;">
+                             ${realisasiVal > 15 ? `<span class="text-[9px] font-extrabold text-white font-mono">${realisasiVal.toFixed(0)}%</span>` : ''}
+                        </div>
+                        
+                        <!-- Target Red Vertical Needle -->
+                        <div class="absolute h-full w-1 bg-red-500 z-10 hover:scale-x-150 transition-transform cursor-pointer" 
+                             style="left: ${Math.min(targetVal, 100)}%;"
+                             title="Target: ${targetVal}%">
+                             <div class="absolute -top-1 -left-1 w-2.5 h-2.5 bg-red-600 rounded-full border border-white"></div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        // 11. CHARTS RENDERING (CHART.JS)
+        function renderCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const legendColor = isDark ? '#94a3b8' : '#64748b';
+            const gridColor = isDark ? 'rgba(51, 65, 85, 0.2)' : 'rgba(226, 232, 240, 0.5)';
+
+            // Counts
+            const countBelum = filteredData.filter(item => item.keterangan === 'BELUM').length;
+            const countProses = filteredData.filter(item => item.keterangan === 'PROSES').length;
+            const countSelesai = filteredData.filter(item => item.keterangan === 'SELESAI').length;
+
+            // --- CHART 1: DONUT CHART FOR STATUS ---
+            if (statusChart) {
+                statusChart.destroy();
+            }
+
+            const ctxDonut = document.getElementById('status-donut-chart').getContext('2d');
+            statusChart = new Chart(ctxDonut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Belum Mulai', 'Dalam Proses', 'Selesai'],
+                    datasets: [{
+                        data: [countBelum, countProses, countSelesai],
+                        backgroundColor: [
+                            '#EF4444', // Crimson Red
+                            '#F59E0B', // Amber Orange
+                            '#10B981'  // Emerald Green
+                        ],
+                        borderWidth: isDark ? 2 : 1,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: legendColor,
+                                font: {
+                                    family: 'Plus Jakarta Sans',
+                                    size: 10,
+                                    weight: 'bold'
+                                },
+                                padding: 14
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const val = context.raw;
+                                    const total = countBelum + countProses + countSelesai;
+                                    const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                    return ` ${context.label}: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // --- CHART 2: MONTHLY BAR CHART ---
+            // Aggregate Rencana Eksekusi
+            const monthsMap = {};
+            filteredData.forEach(item => {
+                const m = item.rencana_eksekusi || "TIDAK ADA";
+                monthsMap[m] = (monthsMap[m] || 0) + 1;
+            });
+
+            const barLabels = Object.keys(monthsMap);
+            const barData = Object.values(monthsMap);
+
+            if (monthlyChart) {
+                monthlyChart.destroy();
+            }
+
+            const ctxBar = document.getElementById('monthly-bar-chart').getContext('2d');
+            monthlyChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: barLabels,
+                    datasets: [{
+                        label: 'Jumlah Kegiatan',
+                        data: barData,
+                        backgroundColor: isDark ? 'rgba(96, 165, 250, 0.75)' : '#3653f5',
+                        borderRadius: 6,
+                        barThickness: 16
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: legendColor,
+                                font: {
+                                    family: 'Plus Jakarta Sans',
+                                    size: 8,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: legendColor,
+                                precision: 0,
+                                font: {
+                                    size: 8
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 12. RENDER THE DETAILED DATA TABLE
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="text-center py-10 text-slate-400 dark:text-slate-500 italic font-semibold">
+                            Tidak ada data yang cocok dengan kriteria filter.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition duration-100 border-b border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-medium";
+
+                // Status styles
+                let badgeClass = "";
+                let statusDot = "";
+                if (item.keterangan === 'BELUM') {
+                    badgeClass = "bg-red-500/10 text-red-500 border border-red-500/20";
+                    statusDot = "🔴";
+                } else if (item.keterangan === 'PROSES') {
+                    badgeClass = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
+                    statusDot = "🟡";
+                } else if (item.keterangan === 'SELESAI') {
+                    badgeClass = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+                    statusDot = "🟢";
+                } else {
+                    badgeClass = "bg-slate-500/10 text-slate-400 border border-slate-500/10";
+                    statusDot = "⚪";
+                }
+
+                // Conditional cell format for Realisasi (%)
+                const realPct = parseFloat(item.total_realisasi_pct || 0);
+                let pctCellClass = "font-bold font-mono text-center ";
+                if (realPct < 50) {
+                    pctCellClass += "text-red-500 bg-red-500/5";
+                } else if (realPct < 80) {
+                    pctCellClass += "text-amber-500 bg-amber-500/5";
+                } else {
+                    pctCellClass += "text-emerald-500 bg-emerald-500/5";
+                }
+
+                tr.innerHTML = `
+                    <td class="py-4 px-4 text-center font-bold font-mono text-slate-400">${item.no}</td>
+                    <td class="py-4 px-4 font-bold text-slate-900 dark:text-slate-100 max-w-[200px] truncate" title="${item.sub_kegiatan}">${item.sub_kegiatan}</td>
+                    <td class="py-4 px-4 text-slate-500 dark:text-slate-400 max-w-[240px] truncate" title="${item.indikator}">${item.indikator}</td>
+                    <td class="py-4 px-4 text-center font-semibold font-mono">${item.target_t1 ? parseFloat(item.target_t1).toFixed(0) + '%' : '-'}</td>
+                    <td class="py-4 px-4 text-center font-mono">${item.realisasi_t1 ? parseFloat(item.realisasi_t1).toFixed(2) + '%' : '0.00%'}</td>
+                    <td class="py-4 px-4 text-center font-semibold font-mono">${item.target_t2 ? parseFloat(item.target_t2).toFixed(0) + '%' : '-'}</td>
+                    <td class="py-4 px-4 text-center font-mono">${item.realisasi_t2 ? parseFloat(item.realisasi_t2).toFixed(2) + '%' : '0.00%'}</td>
+                    <td class="py-4 px-4 ${pctCellClass}">${realPct.toFixed(2)}%</td>
+                    <td class="py-4 px-4 text-center font-bold tracking-wide uppercase text-[10px] text-slate-500 dark:text-slate-400">${item.rencana_eksekusi || '-'}</td>
+                    <td class="py-4 px-4 truncate max-w-[150px] text-slate-500 dark:text-slate-400" title="${item.fisik_kegiatan}">${item.fisik_kegiatan || '-'}</td>
+                    <td class="py-4 px-4 text-center">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest ${badgeClass} gap-1">
+                            ${item.keterangan || 'N/A'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('table-info').innerText = `Menampilkan ${filteredData.length} dari ${capayanData.length} kegiatan aktif`;
+        }
+
+        // 13. SEARCH TABLE
+        function searchTable() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+
+            if (!query) {
+                applyFilters(); // Reset to default filters
+                return;
+            }
+
+            filteredData = capayanData.filter(item => {
+                const inSub = item.sub_kegiatan.toLowerCase().includes(query);
+                const inInd = item.indikator.toLowerCase().includes(query);
+                const inFis = (item.fisik_kegiatan || "").toLowerCase().includes(query);
+                return inSub || inInd || inFis;
+            });
+
+            document.getElementById('filtered-count-text').innerText = filteredData.length;
+            renderDashboardStats();
+            renderBulletCharts();
+            renderTable();
+            renderCharts();
+        }
+
+        // 14. SORT TABLE COLUMNS
+        function sortTable(colIndex) {
+            if (currentSortCol === colIndex) {
+                currentSortAsc = !currentSortAsc;
+            } else {
+                currentSortCol = colIndex;
+                currentSortAsc = true;
+            }
+
+            filteredData.sort((a, b) => {
+                let valA, valB;
+
+                switch (colIndex) {
+                    case 0: // No
+                        valA = parseInt(a.no);
+                        valB = parseInt(b.no);
+                        break;
+                    case 1: // Sub Kegiatan
+                        valA = a.sub_kegiatan;
+                        valB = b.sub_kegiatan;
+                        break;
+                    case 2: // Indikator
+                        valA = a.indikator;
+                        valB = b.indikator;
+                        break;
+                    case 3: // Target T1
+                        valA = parseFloat(a.target_t1 || 0);
+                        valB = parseFloat(b.target_t1 || 0);
+                        break;
+                    case 4: // Realisasi T1
+                        valA = parseFloat(a.realisasi_t1 || 0);
+                        valB = parseFloat(b.realisasi_t1 || 0);
+                        break;
+                    case 5: // Target T2
+                        valA = parseFloat(a.target_t2 || 0);
+                        valB = parseFloat(b.target_t2 || 0);
+                        break;
+                    case 6: // Realisasi T2
+                        valA = parseFloat(a.realisasi_t2 || 0);
+                        valB = parseFloat(b.realisasi_t2 || 0);
+                        break;
+                    case 7: // Total Realisasi
+                        valA = parseFloat(a.total_realisasi_pct || 0);
+                        valB = parseFloat(b.total_realisasi_pct || 0);
+                        break;
+                    case 8: // Bulan Eksekusi
+                        valA = a.rencana_eksekusi || "";
+                        valB = b.rencana_eksekusi || "";
+                        break;
+                    case 9: // Fisik Kegiatan
+                        valA = a.fisik_kegiatan || "";
+                        valB = b.fisik_kegiatan || "";
+                        break;
+                    case 10: // Status
+                        valA = a.keterangan || "";
+                        valB = b.keterangan || "";
+                        break;
+                    default:
+                        valA = a.no;
+                        valB = b.no;
+                }
+
+                if (valA < valB) return currentSortAsc ? -1 : 1;
+                if (valA > valB) return currentSortAsc ? 1 : -1;
+                return 0;
+            });
+
+            renderTable();
+        }
+
+        // 15. RENDER TAB 2: TABEL IKU
+        function renderIkuTable() {
+            const tbody = document.getElementById('iku-table-body');
+            tbody.innerHTML = '';
+
+            ikuData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 dark:hover:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-medium";
+
+                const capPct = parseFloat(item.capaian_pct || 0);
+                let capClass = "font-bold font-mono text-center ";
+                if (capPct < 50) capClass += "text-red-500 bg-red-500/5";
+                else if (capPct < 80) capClass += "text-amber-500 bg-amber-500/5";
+                else capClass += "text-emerald-500 bg-emerald-500/5";
+
+                tr.innerHTML = `
+                    <td class="py-4 px-5 max-w-[200px] font-semibold text-slate-800 dark:text-slate-200" title="${item.tujuan_strategis}">${item.tujuan_strategis || '<span class="text-slate-400 italic">Sama dengan di atas</span>'}</td>
+                    <td class="py-4 px-5 max-w-[200px]" title="${item.sasaran_strategis}">${item.sasaran_strategis}</td>
+                    <td class="py-4 px-5 font-bold text-slate-900 dark:text-slate-100" title="${item.indikator_utama}">${item.indikator_utama}</td>
+                    <td class="py-4 px-5 text-center font-bold text-slate-400 uppercase tracking-widest text-[10px]">${item.satuan}</td>
+                    <td class="py-4 px-5 text-center font-bold font-mono text-slate-900 dark:text-white">${item.target}</td>
+                    <td class="py-4 px-5 text-center font-mono">${parseFloat(item.realisasi).toFixed(1)}</td>
+                    <td class="py-4 px-5 ${capClass}">${capPct.toFixed(1)}%</td>
+                    <td class="py-4 px-5 text-center">
+                        <span class="text-slate-400 italic text-[11px]">Belum diunggah</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 16. RENDER TAB 3: FORM LOG TABLE
+        function renderFormTable() {
+            const tbody = document.getElementById('form-table-body');
+            tbody.innerHTML = '';
+
+            formLogData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 dark:hover:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-medium";
+
+                tr.innerHTML = `
+                    <td class="py-4 px-5 font-mono text-slate-400 text-[11px]">${item.timestamp}</td>
+                    <td class="py-4 px-5 font-bold text-slate-900 dark:text-slate-100">${item.sub_kegiatan}</td>
+                    <td class="py-4 px-5"><span class="px-2.5 py-1 bg-brand-500/10 text-brand-500 border border-brand-500/15 rounded-full text-[10px] font-bold uppercase tracking-wider">${item.periode}</span></td>
+                    <td class="py-4 px-5 text-right font-extrabold font-mono text-emerald-600 dark:text-emerald-400">${item.progress_realisasi}</td>
+                    <td class="py-4 px-5 font-semibold text-slate-500 dark:text-slate-400">${item.email_address}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+
+</html>
