@@ -629,17 +629,18 @@
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Kategori Capaian</span>
                         <div class="grid grid-cols-3 gap-2 pt-1">
                             <div class="bg-emerald-500/10 border border-emerald-500/15 rounded-xl p-2 text-center">
-                                <span
+                                <span id="iku-count-tinggi"
                                     class="block text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">1</span>
                                 <span class="text-[9px] font-bold text-emerald-500 uppercase">Tinggi</span>
                             </div>
                             <div class="bg-amber-500/10 border border-amber-500/15 rounded-xl p-2 text-center">
-                                <span
+                                <span id="iku-count-sedang"
                                     class="block text-lg font-bold text-amber-600 dark:text-amber-400 font-mono">1</span>
                                 <span class="text-[9px] font-bold text-amber-500 uppercase">Sedang</span>
                             </div>
                             <div class="bg-red-500/10 border border-red-500/15 rounded-xl p-2 text-center">
-                                <span class="block text-lg font-bold text-red-600 dark:text-red-400 font-mono">2</span>
+                                <span id="iku-count-rendah"
+                                    class="block text-lg font-bold text-red-600 dark:text-red-400 font-mono">2</span>
                                 <span class="text-[9px] font-bold text-red-500 uppercase">Rendah</span>
                             </div>
                         </div>
@@ -1007,8 +1008,8 @@
                 "indikator_utama": "Persentase Pengaduan Masyarakat Yang Ditindaklanjuti Melalui Aplikasi Layanan Publik Digital",
                 "satuan": "Persen",
                 "target": "60",
-                "realisasi": "1.0",
-                "capaian_pct": "91.0",
+                "realisasi": "0.0",
+                "capaian_pct": "0.0",
                 "link_bukti": ""
             },
             {
@@ -1018,7 +1019,7 @@
                 "satuan": "Persen",
                 "target": "37.5",
                 "realisasi": "0.0",
-                "capaian_pct": "51.0",
+                "capaian_pct": "0.0",
                 "link_bukti": ""
             },
             {
@@ -1611,44 +1612,44 @@
             if (!container) return;
             container.innerHTML = '';
 
-            const cardMeta = [
-                {
-                    icon: "message-square",
-                    colorClass: "text-emerald-500 bg-emerald-500/10 border-emerald-500/15",
-                    progressColor: "#10B981",
-                    badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/15",
-                    badgeText: "Sangat Baik (>80%)",
-                    title: "Layanan Publik Digital"
-                },
-                {
-                    icon: "cpu",
-                    colorClass: "text-amber-500 bg-amber-500/10 border-amber-500/15",
-                    progressColor: "#F59E0B",
-                    badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/15",
-                    badgeText: "Sedang (50-80%)",
-                    title: "Kualitas & Integrasi Aplikasi"
-                },
-                {
-                    icon: "database",
-                    colorClass: "text-rose-500 bg-rose-500/10 border-rose-500/15",
-                    progressColor: "#EF4444",
-                    badgeColor: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/15",
-                    badgeText: "Kritis (<50%)",
-                    title: "Statistik Sektoral & Perencanaan"
-                },
-                {
-                    icon: "shield-check",
-                    colorClass: "text-rose-500 bg-rose-500/10 border-rose-500/15",
-                    progressColor: "#EF4444",
-                    badgeColor: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/15",
-                    badgeText: "Kritis (<50%)",
-                    title: "Keamanan Informasi & Sandi"
-                }
+            let totalCap = 0;
+            let countTinggi = 0;
+            let countSedang = 0;
+            let countRendah = 0;
+            const ikuCount = ikuData.length;
+
+            const baseCardMeta = [
+                { icon: "message-square", title: "Layanan Publik Digital" },
+                { icon: "cpu", title: "Kualitas & Integrasi Aplikasi" },
+                { icon: "database", title: "Statistik Sektoral & Perencanaan" },
+                { icon: "shield-check", title: "Keamanan Informasi & Sandi" }
             ];
 
             ikuData.forEach((item, idx) => {
-                const meta = cardMeta[idx] || cardMeta[0];
+                const baseMeta = baseCardMeta[idx] || baseCardMeta[0];
                 const capPct = parseFloat(item.capaian_pct || 0);
+                totalCap += capPct;
+
+                let meta = { ...baseMeta };
+                if (capPct > 80) {
+                    meta.colorClass = "text-emerald-500 bg-emerald-500/10 border-emerald-500/15";
+                    meta.progressColor = "#10B981";
+                    meta.badgeColor = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/15";
+                    meta.badgeText = "Sangat Baik (>80%)";
+                    countTinggi++;
+                } else if (capPct >= 50) {
+                    meta.colorClass = "text-amber-500 bg-amber-500/10 border-amber-500/15";
+                    meta.progressColor = "#F59E0B";
+                    meta.badgeColor = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/15";
+                    meta.badgeText = "Sedang (50-80%)";
+                    countSedang++;
+                } else {
+                    meta.colorClass = "text-rose-500 bg-rose-500/10 border-rose-500/15";
+                    meta.progressColor = "#EF4444";
+                    meta.badgeColor = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/15";
+                    meta.badgeText = "Kritis (<50%)";
+                    countRendah++;
+                }
 
                 // Circular SVG progress properties
                 const radius = 32;
@@ -1700,16 +1701,27 @@
                 container.appendChild(cardDiv);
             });
 
+            // Update top metrics dynamically
+            const avgCap = ikuCount > 0 ? (totalCap / ikuCount) : 0;
+            const avgElem = document.getElementById('stat-iku-avg');
+            if (avgElem) avgElem.innerText = avgCap.toFixed(1) + '%';
+            
+            const gaugeNeedle = document.getElementById('iku-gauge-needle');
+            if (gaugeNeedle) {
+                // simple mapping 0-100% to -90 to 90 deg
+                const deg = (avgCap / 100) * 180 - 90;
+                gaugeNeedle.style.transform = `rotate(${deg}deg)`;
+            }
+
+            const ctTinggi = document.getElementById('iku-count-tinggi');
+            if (ctTinggi) ctTinggi.innerText = countTinggi;
+            const ctSedang = document.getElementById('iku-count-sedang');
+            if (ctSedang) ctSedang.innerText = countSedang;
+            const ctRendah = document.getElementById('iku-count-rendah');
+            if (ctRendah) ctRendah.innerText = countRendah;
+
             // Trigger lucide on new elements
             lucide.createIcons();
-
-            // Animate Mini IKU Gauge Needle
-            const avgIku = 35.5; // (91 + 51 + 0 + 0) / 4
-            const angle = -90 + (avgIku * 1.8);
-            const needle = document.getElementById('iku-gauge-needle');
-            if (needle) {
-                needle.style.transform = `rotate(${angle}deg)`;
-            }
         }
 
         // 15. RENDER TAB 2: TABEL IKU
