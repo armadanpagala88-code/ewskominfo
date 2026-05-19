@@ -215,11 +215,7 @@
                     </button>
 
                     <!-- PDF Export Button -->
-                    <button onclick="window.print()"
-                        class="flex items-center px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs sm:text-sm font-semibold transition shadow-md shadow-brand-950/20 gap-2">
-                        <i data-lucide="printer" class="w-4 h-4"></i>
-                        Cetak Laporan
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -255,12 +251,7 @@
                 </button>
             </div>
 
-            <a href="https://docs.google.com/spreadsheets/d/1KTG8WCkU_pEWPvfv9gMyAIVMuTEdW_fX2EOsoA3C79g/edit?gid=0#gid=0"
-                target="_blank"
-                class="flex items-center px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-semibold rounded-lg text-xs gap-1.5 transition">
-                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                Buka Google Sheets Asli
-            </a>
+
         </div>
 
         <!-- FILTERS PANEL -->
@@ -583,55 +574,68 @@
             <!-- IKU TOP SUMMARY METRICS -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Card 1: Total Indikator IKU -->
-                <div class="glass-card rounded-2xl p-6 flex items-center justify-between shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-all duration-300">
+                <div
+                    class="glass-card rounded-2xl p-6 flex items-center justify-between shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-all duration-300">
                     <div class="space-y-2.5 relative z-10">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Sasaran Strategis</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Sasaran
+                            Strategis</span>
                         <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white flex items-baseline gap-2">
                             4 <span class="text-sm font-medium text-slate-400">Indikator IKU</span>
                         </h2>
                         <p class="text-[11px] font-medium text-slate-400 mt-1">Dinas Kominfo Kabupaten Konawe</p>
                     </div>
-                    <div class="p-4 bg-brand-500/10 border border-brand-500/15 rounded-2xl text-brand-500 relative z-10 shadow-inner group-hover:bg-brand-500/20 transition-colors duration-300">
+                    <div
+                        class="p-4 bg-brand-500/10 border border-brand-500/15 rounded-2xl text-brand-500 relative z-10 shadow-inner group-hover:bg-brand-500/20 transition-colors duration-300">
                         <i data-lucide="target" class="w-8 h-8"></i>
                     </div>
                 </div>
 
                 <!-- Card 2: Rata-rata Capaian IKU -->
-                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-all duration-300">
+                <div
+                    class="glass-card rounded-2xl p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-all duration-300">
                     <div class="flex items-center justify-between">
                         <div class="space-y-1">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Rata-rata Capaian IKU</span>
-                            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white font-mono" id="stat-iku-avg">35.5%</h2>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Rata-rata Capaian
+                                IKU</span>
+                            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white font-mono"
+                                id="stat-iku-avg">35.5%</h2>
                         </div>
                         <!-- MINI GAUGE -->
                         <div class="relative w-16 h-10 flex items-center justify-center">
                             <div class="gauge-container w-14 h-14 relative -top-2">
                                 <svg viewBox="0 0 100 50" class="w-full h-full">
-                                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e2e8f0" stroke-width="12" class="stroke-slate-200 dark:stroke-slate-800" />
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e2e8f0" stroke-width="12"
+                                        class="stroke-slate-200 dark:stroke-slate-800" />
                                     <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#F59E0B" stroke-width="12"
                                         stroke-dasharray="125" stroke-dashoffset="80.625" />
                                 </svg>
-                                <div id="iku-gauge-needle" class="absolute w-1.5 h-8 bg-slate-800 dark:bg-white bottom-0 left-1/2 -ml-0.75 origin-bottom rounded-full transition-transform duration-1000 ease-out" style="transform: rotate(-26deg);"></div>
+                                <div id="iku-gauge-needle"
+                                    class="absolute w-1.5 h-8 bg-slate-800 dark:bg-white bottom-0 left-1/2 -ml-0.75 origin-bottom rounded-full transition-transform duration-1000 ease-out"
+                                    style="transform: rotate(-26deg);"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="border-t border-slate-100 dark:border-slate-800 pt-3 flex justify-between text-[11px] font-medium text-slate-400">
+                    <div
+                        class="border-t border-slate-100 dark:border-slate-800 pt-3 flex justify-between text-[11px] font-medium text-slate-400">
                         <span>Status Early Warning System</span>
                         <span class="text-amber-500 font-bold">Kritis (Kategori Rendah)</span>
                     </div>
                 </div>
 
                 <!-- Card 3: Distribusi Kategori Capaian -->
-                <div class="glass-card rounded-2xl p-6 flex items-center justify-between shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-all duration-300">
+                <div
+                    class="glass-card rounded-2xl p-6 flex items-center justify-between shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-all duration-300">
                     <div class="space-y-2 relative z-10 w-full">
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Kategori Capaian</span>
                         <div class="grid grid-cols-3 gap-2 pt-1">
                             <div class="bg-emerald-500/10 border border-emerald-500/15 rounded-xl p-2 text-center">
-                                <span class="block text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">1</span>
+                                <span
+                                    class="block text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">1</span>
                                 <span class="text-[9px] font-bold text-emerald-500 uppercase">Tinggi</span>
                             </div>
                             <div class="bg-amber-500/10 border border-amber-500/15 rounded-xl p-2 text-center">
-                                <span class="block text-lg font-bold text-amber-600 dark:text-amber-400 font-mono">1</span>
+                                <span
+                                    class="block text-lg font-bold text-amber-600 dark:text-amber-400 font-mono">1</span>
                                 <span class="text-[9px] font-bold text-amber-500 uppercase">Sedang</span>
                             </div>
                             <div class="bg-red-500/10 border border-red-500/15 rounded-xl p-2 text-center">
@@ -658,12 +662,15 @@
 
             <!-- IKU ORIGINAL TABLE CARD -->
             <div class="glass-card rounded-2xl overflow-hidden shadow-sm">
-                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div
+                    class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div class="flex items-center gap-2">
                         <i data-lucide="table-properties" class="w-5 h-5 text-brand-500"></i>
                         <div>
-                            <h3 class="text-sm font-bold uppercase tracking-wider">Tabel Data Indikator Kinerja Utama (IKU)</h3>
-                            <p class="text-[11px] font-medium text-slate-400 mt-1">Dinas Komunikasi, Informatika, Statistik, dan Persandian Kabupaten Konawe</p>
+                            <h3 class="text-sm font-bold uppercase tracking-wider">Tabel Data Indikator Kinerja Utama
+                                (IKU)</h3>
+                            <p class="text-[11px] font-medium text-slate-400 mt-1">Dinas Komunikasi, Informatika,
+                                Statistik, dan Persandian Kabupaten Konawe</p>
                         </div>
                     </div>
                 </div>
@@ -671,7 +678,8 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50/75 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            <tr
+                                class="bg-slate-50/75 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                 <th class="py-4 px-5">Tujuan Strategis</th>
                                 <th class="py-4 px-5">Sasaran Strategis</th>
                                 <th class="py-4 px-5">Indikator Kinerja Utama</th>
