@@ -16,6 +16,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PapaParse for CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -206,6 +208,14 @@
                         <span class="block text-slate-300">Live Sync Google Sheet</span>
                         <span id="live-time" class="font-mono text-[11px]">Loading...</span>
                     </div>
+
+                    <!-- Sync Button -->
+                    <button onclick="manualSync()" id="sync-btn"
+                        class="flex items-center gap-2 px-3 py-2 bg-brand-500/20 hover:bg-brand-500/40 border border-brand-500/30 text-brand-300 rounded-xl transition duration-150 focus:outline-none"
+                        title="Sinkronisasi Data Sekarang">
+                        <i id="sync-icon" data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <span class="text-xs font-semibold">Sync</span>
+                    </button>
 
                     <!-- Dark Mode Toggle Button -->
                     <button onclick="toggleDarkMode()"
@@ -1044,22 +1054,7 @@
             }
         ];
 
-        const formLogData = [
-            {
-                "timestamp": "2026-05-07 14:52:41",
-                "sub_kegiatan": "Kemitraan Komunikasi dengan Komunitas Informasi Masyarakat",
-                "progress_realisasi": "Rp24.984.400",
-                "periode": "Triwulan II",
-                "email_address": "dinamunawati0212@gmail.com"
-            },
-            {
-                "timestamp": "2026-05-07 15:13:52",
-                "sub_kegiatan": "Kemitraan Komunikasi dengan Komunitas Informasi Masyarakat",
-                "progress_realisasi": "Rp12.000.000",
-                "periode": "Triwulan II",
-                "email_address": "dinamunawati0212@gmail.com"
-            }
-        ];
+        let formLogData = [];
 
         // 2. STATE VARIABLES
         let filteredData = [...capayanData];
@@ -1072,10 +1067,6 @@
         window.onload = function () {
             lucide.createIcons();
 
-            // Set live sync time
-            const now = new Date();
-            document.getElementById('live-time').innerText = now.toLocaleString('id-ID') + " WIB";
-
             // Populate Dropdowns
             populateFilters();
 
@@ -1083,13 +1074,70 @@
             renderDashboard();
             renderIkuDashboard();
             renderIkuTable();
-            renderFormTable();
 
             // Setup Chart.js Defaults for Dark Mode if needed
             if (document.documentElement.classList.contains('dark')) {
                 Chart.defaults.color = '#94a3b8';
             }
+
+            // Fetch Live Google Sheet Data
+            fetchGoogleSheetData();
+            
+            // Auto refresh every 5 minutes
+            setInterval(fetchGoogleSheetData, 300000);
         };
+
+        function manualSync() {
+            const icon = document.getElementById('sync-icon');
+            icon.classList.add('animate-spin');
+            fetchGoogleSheetData(true);
+        }
+
+        function fetchGoogleSheetData(isManual = false) {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1rUEtH33CkOohu1rnsfd108cuTlHkCtXN/export?format=csv';
+            document.getElementById('live-time').innerText = "Syncing...";
+            
+            Papa.parse(sheetUrl, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    const now = new Date();
+                    document.getElementById('live-time').innerText = now.toLocaleString('id-ID') + " WIB";
+                    
+                    const data = results.data;
+                    formLogData = data.map(row => {
+                        let val = row['PROGRESS REALISASI'] || '';
+                        let formattedVal = val;
+                        if (!isNaN(parseFloat(val)) && val.trim() !== '') {
+                            formattedVal = 'Rp' + parseFloat(val).toLocaleString('id-ID');
+                        }
+                        return {
+                            timestamp: row['Timestamp'] || '-',
+                            sub_kegiatan: row['SUB KEGIATAN'] || '-',
+                            progress_realisasi: formattedVal || '-',
+                            periode: row['PERIODE'] || '-',
+                            email_address: row['Email Address'] || '-'
+                        };
+                    });
+                    
+                    renderFormTable();
+
+                    if (isManual) {
+                        setTimeout(() => {
+                            document.getElementById('sync-icon').classList.remove('animate-spin');
+                        }, 500);
+                    }
+                },
+                error: function(err) {
+                    console.error("Error fetching Google Sheet: ", err);
+                    document.getElementById('live-time').innerText = "Gagal Sync";
+                    if (isManual) {
+                        document.getElementById('sync-icon').classList.remove('animate-spin');
+                    }
+                }
+            });
+        }
 
         // 4. POPULATE DROPDOWNS
         function populateFilters() {
@@ -1778,3 +1826,4 @@
 </body>
 
 </html>
+
